@@ -9,16 +9,16 @@
                 "USE_HAL_DRIVER",
                 "STM32F411xE"
             ],
-            "compilerPath": "C:/arm-gcc/tools/gcc-arm-none-eabi-10-2020-q4-major/bin/arm-none-eabi-gcc",
+            "compilerPath": "C:/arm-gcc/tools/gcc-arm-none-eabi-10-2020-q4-major/bin/arm-none-eabi-gcc.exe",
             "cStandard": "c11",
             "cppStandard": "gnu++14",
-            "intelliSenseMode": "gcc-arm",      
+            "intelliSenseMode": "gcc-arm",
             "compilerArgs": [
                 "-mcpu=cortex-m4",
                 "-mthumb",
                 "-mfpu=fpv4-sp-d16",
                 "-mfloat-abi=hard"
-            ]            
+            ]
         }
     ],
     "version": 4

@@ -8,7 +8,7 @@
             "type": "shell",
             "command": "make",
             "args": [
-                ""
+                "-j12"
             ],
             "group": "build",
             "presentation": {

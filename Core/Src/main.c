@@ -21,7 +21,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "button.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -57,48 +57,16 @@ static void MX_GPIO_Init(void);
 /* USER CODE END 0 */
 
 /**
- * @brief  The application entry point.
- * @retval int
- */
-uint8_t button_release(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin, uint8_t active_high)
-{
-  static uint8_t last_state = 1; // Último estado do botão
-  uint8_t current_state;
-
-  // Lê o estado atual do pino
-  current_state = HAL_GPIO_ReadPin(GPIOx, GPIO_Pin);
-
-  // Se o botão for ativo em nível alto, inverte a lógica
-  if (!active_high)
-    current_state = !current_state;
-
-  // Detecta transição de pressionado para solto
-  if (current_state == 1 && last_state == 0)
-  {
-    HAL_Delay(20); // Delay LED_KIT_Pinde debounce (20ms)
-
-    // Confirma se ainda está solto após o delay
-    if (HAL_GPIO_ReadPin(GPIOx, GPIO_Pin) == (active_high ? GPIO_PIN_SET : GPIO_PIN_RESET))
-    {
-      last_state = 1;
-      return 1; // Botão foi solto
-    }
-  }
-
-  // Atualiza estado anterior se estiver pressionado
-  if (current_state == 0)
-    last_state = 0;
-
-  return 0; // Nenhuma transição detectada
-}
-
+  * @brief  The application entry point.
+  * @retval int
+  */
 int main(void)
 {
 
   /* USER CODE BEGIN 1 */
   uint32_t i;
   uint8_t leds = 0;
-  uint8_t last_led = 0;
+  uint8_t numeroDeLeds = 5;
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -125,56 +93,51 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-
   while (1)
   {
-    for (i = 0; i < 5; i++)
+    for (i = 0; i < numeroDeLeds; i++)
     {
 
       if (button_release(GPIOB, GPIO_PIN_12, 0))
       {
-        // if (HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_12) == GPIO_PIN_RESET){ // botão pressionado
 
-        HAL_GPIO_WritePin(GPIOA, leds, 0);
-
-        if (leds == 0)
+        leds = (leds + 1) & 0x1F; // contador de 0 a 31 usando 5 leds de pa3 a pa7
+        // limpa os LED pins (PA3 à PA7)
+        HAL_GPIO_WritePin(GPIOA, LED1_Pin | LED2_Pin | LED3_Pin | LED4_Pin | LED5_Pin, GPIO_PIN_RESET);
+        // Acende os LEDs conforme o valor do contador
+        for (uint8_t bit = 0; bit < 5; bit++)
         {
-          leds = (1 << 3);
+          if (leds & (1 << bit))
+          {
+            HAL_GPIO_WritePin(GPIOA, (LED1_Pin << bit), GPIO_PIN_SET);
+          }
         }
-        else if (leds == GPIO_PIN_7)
-        {
-          leds = 0;
-        }
-        else
-        {
-          leds = leds << 1;
-        }
-
-        HAL_GPIO_WritePin(GPIOA, leds, 1);
       }
-
-      HAL_Delay(200);
+      HAL_Delay(81);
     }
+    HAL_GPIO_TogglePin(KIT_LED_GPIO_Port, KIT_LED_Pin);
   }
 }
+    /* USER CODE END WHILE */
+
 
 /**
- * @brief System Clock Configuration
- * @retval None
- */
+  * @brief System Clock Configuration
+  * @retval None
+  */
 void SystemClock_Config(void)
 {
   RCC_OscInitTypeDef RCC_OscInitStruct = {0};
   RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
 
   /** Configure the main internal regulator output voltage
-   */
+  */
   __HAL_RCC_PWR_CLK_ENABLE();
   __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE2);
 
   /** Initializes the RCC Oscillators according to the specified parameters
-   * in the RCC_OscInitTypeDef structure.
-   */
+  * in the RCC_OscInitTypeDef structure.
+  */
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
   RCC_OscInitStruct.HSEState = RCC_HSE_ON;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
@@ -189,8 +152,9 @@ void SystemClock_Config(void)
   }
 
   /** Initializes the CPU, AHB and APB buses clocks
-   */
-  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
+  */
+  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
+                              |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
@@ -203,10 +167,10 @@ void SystemClock_Config(void)
 }
 
 /**
- * @brief GPIO Initialization Function
- * @param None
- * @retval None
- */
+  * @brief GPIO Initialization Function
+  * @param None
+  * @retval None
+  */
 static void MX_GPIO_Init(void)
 {
   GPIO_InitTypeDef GPIO_InitStruct = {0};
@@ -223,7 +187,8 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(KIT_LED_GPIO_Port, KIT_LED_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, LED1_Pin | LED2_Pin | LED3_Pin | LED4_Pin | LED5_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, LED1_Pin|LED2_Pin|LED3_Pin|LED4_Pin
+                          |LED5_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin : KIT_LED_Pin */
   GPIO_InitStruct.Pin = KIT_LED_Pin;
@@ -234,7 +199,8 @@ static void MX_GPIO_Init(void)
 
   /*Configure GPIO pins : LED1_Pin LED2_Pin LED3_Pin LED4_Pin
                            LED5_Pin */
-  GPIO_InitStruct.Pin = LED1_Pin | LED2_Pin | LED3_Pin | LED4_Pin | LED5_Pin;
+  GPIO_InitStruct.Pin = LED1_Pin|LED2_Pin|LED3_Pin|LED4_Pin
+                          |LED5_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -255,9 +221,9 @@ static void MX_GPIO_Init(void)
 /* USER CODE END 4 */
 
 /**
- * @brief  This function is executed in case of error occurrence.
- * @retval None
- */
+  * @brief  This function is executed in case of error occurrence.
+  * @retval None
+  */
 void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
@@ -270,12 +236,12 @@ void Error_Handler(void)
 }
 #ifdef USE_FULL_ASSERT
 /**
- * @brief  Reports the name of the source file and the source line number
- *         where the assert_param error has occurred.
- * @param  file: pointer to the source file name
- * @param  line: assert_param error line source number
- * @retval None
- */
+  * @brief  Reports the name of the source file and the source line number
+  *         where the assert_param error has occurred.
+  * @param  file: pointer to the source file name
+  * @param  line: assert_param error line source number
+  * @retval None
+  */
 void assert_failed(uint8_t *file, uint32_t line)
 {
   /* USER CODE BEGIN 6 */
