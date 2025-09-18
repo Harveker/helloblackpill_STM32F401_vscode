@@ -105,13 +105,13 @@ int main(void)
         // limpa os LED pins (PA3 à PA7)
         //HAL_GPIO_WritePin(GPIOA, LED1_Pin | LED2_Pin | LED3_Pin | LED4_Pin | LED5_Pin, GPIO_PIN_RESET);
         // Acende os LEDs conforme o valor do contador
-        /* for (uint8_t bit = 0; bit < 5; bit++)
+         for (uint8_t bit = 0; bit < 5; bit++)
         {
           if (leds & (1 << bit))
           {
             HAL_GPIO_WritePin(GPIOA, (LED1_Pin << bit), GPIO_PIN_SET);
           }
-        } */
+        }
         HAL_GPIO_WritePin(GPIOA, (~leds)<<3, GPIO_PIN_RESET);
         HAL_GPIO_WritePin(GPIOA, leds<<3, GPIO_PIN_SET);
       } */
