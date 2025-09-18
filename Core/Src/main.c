@@ -42,7 +42,7 @@
 
 /* USER CODE BEGIN PV */
 uint32_t i;
-uint8_t leds = 0;
+volatile uint8_t leds = 0;
 uint8_t numeroDeLeds = 5;
 /* USER CODE END PV */
 
