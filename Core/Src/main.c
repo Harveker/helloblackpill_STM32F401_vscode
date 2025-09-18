@@ -42,8 +42,9 @@
 
 /* USER CODE BEGIN PV */
 uint32_t i;
-volatile uint8_t leds = 0;
+volatile uint8_t leds = 5;
 uint8_t numeroDeLeds = 5;
+volatile uint16_t addTempo = 103;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -115,7 +116,7 @@ int main(void)
         HAL_GPIO_WritePin(GPIOA, (~leds)<<3, GPIO_PIN_RESET);
         HAL_GPIO_WritePin(GPIOA, leds<<3, GPIO_PIN_SET);
       } */
-      HAL_Delay(81);
+      HAL_Delay(200);
     }
     HAL_GPIO_TogglePin(KIT_LED_GPIO_Port, KIT_LED_Pin);
   }
@@ -194,7 +195,7 @@ static void MX_GPIO_Init(void)
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOA, LED1_Pin|LED2_Pin|LED3_Pin|LED4_Pin
-                          |LED5_Pin, GPIO_PIN_RESET);
+                          |LED5_Pin, GPIO_PIN_SET);
 
   /*Configure GPIO pin : KIT_LED_Pin */
   GPIO_InitStruct.Pin = KIT_LED_Pin;
@@ -226,8 +227,8 @@ static void MX_GPIO_Init(void)
  void HAL_TIM_PeriodElapsedCallback (&htim4){
   if (button_release(GPIOB, GPIO_PIN_12, 0))
   {
-
-    leds = (leds + 1) & 0x1F; // contador de 0 a 31 usando 5 leds de pa3 a pa7
+    addTempo += 103;
+    leds = (leds - 1) & 0x1F; // contador de 0 a 31 usando 5 leds de pa3 a pa7
     // limpa os LED pins (PA3 à PA7)
     //HAL_GPIO_WritePin(GPIOA, LED1_Pin | LED2_Pin | LED3_Pin | LED4_Pin | LED5_Pin, GPIO_PIN_RESET);
     // Acende os LEDs conforme o valor do contador
@@ -238,8 +239,8 @@ static void MX_GPIO_Init(void)
         HAL_GPIO_WritePin(GPIOA, (LED1_Pin << bit), GPIO_PIN_SET);
       }
     } */
-    HAL_GPIO_WritePin(GPIOA, (~leds)<<3, GPIO_PIN_RESET);
-    HAL_GPIO_WritePin(GPIOA, leds<<3, GPIO_PIN_SET);
+    HAL_GPIO_WritePin(GPIOA, (~leds)>>3, GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(GPIOA, leds>>3, GPIO_PIN_SET);
   }
 
  }
