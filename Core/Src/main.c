@@ -98,7 +98,7 @@ int main(void)
     for (i = 0; i < numeroDeLeds; i++)
     {
 
-      if (button_release(GPIOB, GPIO_PIN_12, 0))
+      /* if (button_release(GPIOB, GPIO_PIN_12, 0))
       {
 
         leds = (leds + 1) & 0x1F; // contador de 0 a 31 usando 5 leds de pa3 a pa7
@@ -114,7 +114,7 @@ int main(void)
         } */
         HAL_GPIO_WritePin(GPIOA, (~leds)<<3, GPIO_PIN_RESET);
         HAL_GPIO_WritePin(GPIOA, leds<<3, GPIO_PIN_SET);
-      }
+      } */
       HAL_Delay(81);
     }
     HAL_GPIO_TogglePin(KIT_LED_GPIO_Port, KIT_LED_Pin);
@@ -122,6 +122,10 @@ int main(void)
 }
     /* USER CODE END WHILE */
 
+    /* USER CODE BEGIN 3 */
+  }
+  /* USER CODE END 3 */
+}
 
 /**
   * @brief System Clock Configuration
@@ -219,7 +223,26 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+ void HAL_TIM_PeriodElapsedCallback (&htim4){
+  if (button_release(GPIOB, GPIO_PIN_12, 0))
+  {
 
+    leds = (leds + 1) & 0x1F; // contador de 0 a 31 usando 5 leds de pa3 a pa7
+    // limpa os LED pins (PA3 à PA7)
+    //HAL_GPIO_WritePin(GPIOA, LED1_Pin | LED2_Pin | LED3_Pin | LED4_Pin | LED5_Pin, GPIO_PIN_RESET);
+    // Acende os LEDs conforme o valor do contador
+    /* for (uint8_t bit = 0; bit < 5; bit++)
+    {
+      if (leds & (1 << bit))
+      {
+        HAL_GPIO_WritePin(GPIOA, (LED1_Pin << bit), GPIO_PIN_SET);
+      }
+    } */
+    HAL_GPIO_WritePin(GPIOA, (~leds)<<3, GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(GPIOA, leds<<3, GPIO_PIN_SET);
+  }
+
+ }
 /* USER CODE END 4 */
 
 /**
