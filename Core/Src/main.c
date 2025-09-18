@@ -41,7 +41,9 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-
+uint32_t i;
+uint8_t leds = 0;
+uint8_t numeroDeLeds = 5;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -64,9 +66,7 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-  uint32_t i;
-  uint8_t leds = 0;
-  uint8_t numeroDeLeds = 5;
+  
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
